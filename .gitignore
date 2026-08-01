@@ -1,0 +1,42 @@
+# environments & secrets
+.venv/
+.env
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# jupyter
+.ipynb_checkpoints/
+
+# data: ignore contents, keep folder structure via .gitkeep
+data/**
+!data/**/
+!data/**/.gitkeep
+!data/README.md
+!data/sample/**
+
+# database files
+db/*.duckdb
+db/*.duckdb.wal
+
+# model artifacts & experiment tracking
+models/**
+!models/**/
+!models/**/.gitkeep
+mlruns/
+
+# batch outputs
+outputs/**
+!outputs/**/
+!outputs/**/.gitkeep
+
+# os / editor noise
+.DS_Store
+Thumbs.db
