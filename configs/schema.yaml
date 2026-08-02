@@ -1,0 +1,108 @@
+version: 1
+dataset: dunnhumby_complete_journey
+source_doc: references/complete_journey_user_guide.pdf
+notes: >
+  DAY is an integer day index (~1-712, two years). WEEK_NO runs 1-102.
+  Discount columns are stored as negative values; see user guide for
+  shelf-price reconstruction before using price features.
+
+tables:
+  transaction_data:
+    file: data/raw/transaction_data.csv
+    grain: one row per basket x product (line item)
+    expected_rows: 2595732
+    expect_unique: [BASKET_ID, PRODUCT_ID]     # verify in 99_checks; not guaranteed
+    columns:
+      household_key:     {type: int,    desc: household ID, joins all customer tables}
+      BASKET_ID:         {type: bigint, desc: transaction/basket ID}
+      DAY:               {type: int,    desc: day index since study start}
+      PRODUCT_ID:        {type: int,    desc: FK -> product}
+      QUANTITY:          {type: int,    desc: units purchased}
+      SALES_VALUE:       {type: double, desc: dollars received by retailer for line}
+      STORE_ID:          {type: int,    desc: store identifier}
+      RETAIL_DISC:       {type: double, desc: loyalty-card discount (negative)}
+      TRANS_TIME:        {type: int,    desc: transaction time HHMM}
+      WEEK_NO:           {type: int,    desc: week index 1-102}
+      COUPON_DISC:       {type: double, desc: manufacturer coupon discount (negative)}
+      COUPON_MATCH_DISC: {type: double, desc: retailer coupon-match discount (negative)}
+
+  product:
+    file: data/raw/product.csv
+    grain: one row per product
+    expected_rows: 92353
+    expect_unique: [PRODUCT_ID]
+    columns:
+      PRODUCT_ID:           {type: int, desc: product ID}
+      MANUFACTURER:         {type: int, desc: manufacturer code}
+      DEPARTMENT:           {type: str, desc: top hierarchy level}
+      BRAND:                {type: str, desc: National / Private label}
+      COMMODITY_DESC:       {type: str, desc: category (mid hierarchy)}
+      SUB_COMMODITY_DESC:   {type: str, desc: subcategory (fine hierarchy)}
+      CURR_SIZE_OF_PRODUCT: {type: str, desc: package size, messy text}
+
+  hh_demographic:
+    file: data/raw/hh_demographic.csv
+    grain: one row per household (PARTIAL coverage, 801 of ~2500 - informative missingness)
+    expected_rows: 801
+    expect_unique: [household_key]
+    columns:
+      household_key:     {type: int, desc: FK -> transaction_data}
+      classification_1:  {type: str, ordinal: true,  desc: age band (Age Group1-6, labels anonymized)}
+      classification_2:  {type: str, ordinal: false, desc: marital status (X/Y/Z, mapping unrecoverable)}
+      classification_3:  {type: str, ordinal: true,  desc: income band (Level1-12; extract number - string sort breaks order)}
+      classification_4:  {type: str, ordinal: true,  desc: household size (1-5+)}
+      classification_5:  {type: str, ordinal: false, desc: household composition (Group1-6, anonymized)}
+      HOMEOWNER_DESC:    {type: str, ordinal: false, desc: homeowner status}
+      KID_CATEGORY_DESC: {type: str, ordinal: true,  desc: children count/age band}
+  campaign_table:
+    file: data/raw/campaign_table.csv
+    grain: one row per household x campaign exposure
+    expected_rows: 7208
+    expect_unique: [household_key, CAMPAIGN]
+    columns:
+      household_key: {type: int, desc: exposed household}
+      CAMPAIGN:      {type: int, desc: FK -> campaign_desc}
+      DESCRIPTION:   {type: str, desc: campaign type A/B/C}
+
+  campaign_desc:
+    file: data/raw/campaign_desc.csv
+    grain: one row per campaign (~30)
+    expected_rows: 30
+    expect_unique: [CAMPAIGN]
+    columns:
+      CAMPAIGN:    {type: int, desc: campaign ID}
+      DESCRIPTION: {type: str, desc: campaign type A/B/C}
+      START_DAY:   {type: int, desc: campaign start, DAY units}
+      END_DAY:     {type: int, desc: campaign end, DAY units}
+      
+  coupon:
+    file: data/raw/coupon.csv
+    grain: one row per coupon x product x campaign
+    expected_rows: 124548
+    expect_unique: [COUPON_UPC, PRODUCT_ID, CAMPAIGN]
+    columns:
+      COUPON_UPC: {type: bigint, desc: coupon identifier}
+      PRODUCT_ID: {type: int,    desc: product the coupon applies to}
+      CAMPAIGN:   {type: int,    desc: FK -> campaign_desc}
+
+  coupon_redempt:
+    file: data/raw/coupon_redempt.csv
+    grain: one row per household x day x coupon redemption
+    expected_rows: 2318
+    columns:
+      household_key: {type: int,    desc: redeeming household}
+      DAY:           {type: int,    desc: redemption day}
+      COUPON_UPC:    {type: bigint, desc: FK -> coupon}
+      CAMPAIGN:      {type: int,    desc: FK -> campaign_desc}
+
+  causal_data:
+    file: data/raw/causal_data.csv
+    grain: one row per product x store x week (in-store promo state, ~37M rows)
+    expected_rows: 36786524
+    expect_unique: [PRODUCT_ID, STORE_ID, WEEK_NO]
+    columns:
+      PRODUCT_ID: {type: int, desc: FK -> product}
+      STORE_ID:   {type: int, desc: store}
+      WEEK_NO:    {type: int, desc: week index}
+      display:    {type: str, desc: in-store display location code}
+      mailer:     {type: str, desc: weekly mailer/ad location code}
