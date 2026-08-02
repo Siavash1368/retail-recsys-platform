@@ -1,0 +1,7 @@
+model,recall@10,hit_rate@10,ndcg@10,share_of_ceiling
+buy_again,0.072,0.757,0.303,0.18
+global_popularity,0.041,0.703,0.192,0.1
+dept_popularity,0.034,0.65,0.155,0.08
+item_knn_counts,0.033,0.65,0.175,0.08
+item_knn_damped_lift,0.013,0.247,0.064,0.03
+item_knn_lift,0.012,0.242,0.058,0.03
