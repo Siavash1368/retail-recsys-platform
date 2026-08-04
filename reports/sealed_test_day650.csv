@@ -1,0 +1,5 @@
+model,recall@10,hit_rate@10,ndcg@10,share_of_ceiling
+xgb_ranker,0.105,0.865,0.442,0.26
+buy_again,0.066,0.75,0.284,0.17
+popularity,0.045,0.722,0.204,0.11
+als_affinity,0.029,0.405,0.071,0.07
