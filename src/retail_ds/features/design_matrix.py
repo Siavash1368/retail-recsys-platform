@@ -1,4 +1,6 @@
 """Build the featured, labeled design matrix for one time plane."""
+import os
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
