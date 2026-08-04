@@ -1,0 +1,5 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY configs/ ./configs/
+ENTRYPOINT ["python", "-c", "import pathlib; print(pathlib.Path('configs/base.yaml').read_text())"]docker build -f docker/Dockerfile.hello -t hello-test .
+docker run --rm hello-test
