@@ -1,0 +1,13 @@
+timeline:
+  min_day: 1
+  max_day: 711
+snapshots:
+  train: [450, 510, 570]
+  valid: 600
+  test: 650
+label_horizon_days: 30
+top_k: 10
+candidates:
+  buy_again: -1        # -1 = unlimited (full purchase history)
+  popularity: 50
+  als_new: 50
