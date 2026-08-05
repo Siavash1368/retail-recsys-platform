@@ -19,6 +19,9 @@ dependencies = [
     "tqdm>=4.66",
     "pyyaml>=6.0"
 ]
+[tool.ruff.lint.per-file-ignores]
+# OPENBLAS_NUM_THREADS must be set before implicit imports, so imports follow it
+"src/retail_ds/features/design_matrix.py" = ["E402"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.2", "ruff>=0.5"]
