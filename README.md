@@ -83,7 +83,23 @@ feature scored ≈0.005 importance, because ranking happens *within* a household
 features are constant across its candidates — they can only act through interactions.
 The indicated next step is within-household feature normalization or grouped LambdaMART.
 
----
+## Deployment
+
+Two container images, both built and verified in CI on every push:
+
+- **`retail-score`** — batch scoring CLI (`--as-of <day>`), writes top-K
+  recommendations to parquet. Runs as a Kubernetes **CronJob** (nightly,
+  `concurrencyPolicy: Forbid`, retries on failure).
+- **`retail-api`** — FastAPI service exposing `/recommendations/{household}`
+  and `/health`. Runs as a **Deployment** (2 replicas) behind a **Service**,
+  with liveness and readiness probes on `/health` so traffic only reaches
+  pods that have loaded their data.
+
+Code and dependencies live in the image; the database, model registry, and
+outputs are mounted at runtime. Logs go to stdout for cluster-native
+collection. Verified end-to-end on a local `kind` cluster: pod deletion
+self-heals in ~3s, and a manually triggered CronJob run scored 2,499
+households inside the cluster.
 
 ## Repository tour
 
