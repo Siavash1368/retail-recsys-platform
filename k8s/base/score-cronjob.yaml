@@ -1,0 +1,45 @@
+﻿apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nightly-scoring
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: scorer
+              image: retail-score:v1
+              imagePullPolicy: Never
+              args: ["--as-of", "650"]
+              volumeMounts:
+                - name: db
+                  mountPath: /app/db
+                - name: models
+                  mountPath: /app/models
+                - name: outputs
+                  mountPath: /app/outputs
+              resources:
+                requests:
+                  memory: "1Gi"
+                limits:
+                  memory: "4Gi"
+          volumes:
+            - name: db
+              hostPath:
+                path: /repo/db
+                type: Directory
+            - name: models
+              hostPath:
+                path: /repo/models
+                type: Directory
+            - name: outputs
+              hostPath:
+                path: /repo/outputs
+                type: Directory
