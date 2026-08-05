@@ -1,6 +1,6 @@
 import pandas as pd
 
-from retail_ds.evaluate.metrics import recall_at_k, hit_rate_at_k, ndcg_at_k
+from retail_ds.evaluate.metrics import hit_rate_at_k, ndcg_at_k, recall_at_k
 
 RECS = pd.DataFrame({
     "household_key": [1, 1, 1, 2, 2, 2],

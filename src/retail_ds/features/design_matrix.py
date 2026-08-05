@@ -1,13 +1,14 @@
 """Build the featured, labeled design matrix for one time plane."""
 import os
+
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
 from implicit.als import AlternatingLeastSquares
 
-ALS_PARAMS = dict(factors=64, regularization=0.05, alpha=20.0,
-                  iterations=20, random_state=42)
+ALS_PARAMS = {"factors": 64, "regularization": 0.05, "alpha": 20.0,
+              "iterations": 20, "random_state": 42}
 ZERO_FILL = ["times_bought", "spend_30d", "spend_365d",
              "item_baskets_365d", "item_households_365d"]
 
