@@ -17,14 +17,16 @@ dependencies = [
     "jupyterlab>=4.2",
     "ipykernel>=6.29",
     "tqdm>=4.66",
-    "pyyaml>=6.0"
+    "pyyaml>=6.0",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
 ]
 [tool.ruff.lint.per-file-ignores]
 # OPENBLAS_NUM_THREADS must be set before implicit imports, so imports follow it
 "src/retail_ds/features/design_matrix.py" = ["E402"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.2", "ruff>=0.5"]
+dev = ["pytest>=8.2", "ruff>=0.5","httpx>=0.27"]
 
 [build-system]
 requires = ["setuptools>=68"]
